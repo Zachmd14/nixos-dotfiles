@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
+      ./hardware-configuration.nix
     ];
 
   # Bootloader.
@@ -75,6 +75,7 @@
     atuin
     nodejs
     fastfetch  
+    pkgs.fetch
     git
     gnumake
     gcc
