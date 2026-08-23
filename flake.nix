@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "Personnal Flake";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -8,10 +8,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { self, nixpkgs, fetch }: {
+
+  outputs = { self, nixpkgs, fetch, home-manager, ... }@inputs: {
     nixosConfigurations.zach-nixos = nixpkgs.lib.nixosSystem {
-      modules = [ ./configuration.nix ];
+      system = "x86_64-linux";
+      modules = [
+        ./configuration.nix
+        home-manager.nixosModules.default
+      ];
+      specialArgs = { inherit inputs; };
     };
   };
 }
