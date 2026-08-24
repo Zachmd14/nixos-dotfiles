@@ -42,10 +42,13 @@
     variant = "";
   };
 
+
+  hardware.uinput.enable = true;
+
   users.users."zach" = {
     isNormalUser = true;
     description = "zach";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "uinput" ];
     shell = pkgs.fish;
     packages = with pkgs; [ ];
   };
@@ -65,6 +68,8 @@
     zoxide
     picom
     atuin
+    bat
+    oh-my-fish
     nodejs
     fastfetch
     pkgs.fetch
@@ -79,6 +84,11 @@
     gtk3
     librewolf
     vial
+    htop
+    steam
+    playerctl
+    proton-vpn
+    dunst
     emacs
     xrdb
     xsetroot
@@ -114,25 +124,26 @@
         manage = "desktop";
         name = "emacs";
         start = ''
-          	  picom --config ~/.config/picom/picom.conf &
-          	  flatpak run net.sonuscape.mouseless &
-          	  xss-lock -- i3lock -n &
-          	  xset s 600 600
-          	  xset dpms 600 600 600
-          	  unclutter --timeout 3 &
+                    	  picom --config ~/.config/picom/picom.conf &
+                    	  flatpak run net.sonuscape.mouseless &
+                    	  xss-lock -- i3lock -n &
+                    	  xset s 600 600
+                    	  xset dpms 600 600 600
+          	          dunst &
+                    	  unclutter --timeout 3 &
 
 
-          	  export VISUAL="emacsclient"
-          	  export EDITOR="emacsclient"
+                    	  export VISUAL="emacsclient"
+                    	  export EDITOR="emacsclient"
 
-                    ${pkgs.emacs}/bin/emacs --daemon --init-directory ~/.config/emacs
+                              ${pkgs.emacs}/bin/emacs --daemon --init-directory ~/.config/emacs
 
-                    while ! ${pkgs.emacs}/bin/emacsclient -e '(message "ready")' &>/dev/null; do
-          	    sleep 0.1
-          	  done
-          	  
-          	  ${pkgs.emacs}/bin/emacsclient -c &
-                    waitPID=$!;
+                              while ! ${pkgs.emacs}/bin/emacsclient -e '(message "ready")' &>/dev/null; do
+                    	    sleep 0.1
+                    	  done
+                    	  
+                    	  ${pkgs.emacs}/bin/emacsclient -c &
+                              waitPID=$!;
         '';
       }];
     };
