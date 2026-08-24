@@ -1,6 +1,12 @@
 { config, pkgs, ... }:
 
+
 {
+
+  imports = [
+    ./firefox.nix
+  ];
+
   home.username = "zach";
   home.homeDirectory = "/home/zach";
 
@@ -10,11 +16,14 @@
 
   programs.fish = {
     enable = true;
-    binds = { };
+    binds = {
+      "up".command = "up-or-search";
+    };
 
     shellAliases = {
       nrs = "sudo nixos-rebuild switch --flake";
       mann = "MANPAGER='less -N --use-color -Dd+y -Du+208 -DN+r' man";
+      cd = "z";
     };
 
     functions = { };
@@ -27,12 +36,13 @@
     '';
   };
 
-
-
   programs.atuin = {
     enable = true;
-    # ...
-    flags = [ "--disable-up-arrow" ]; # or --disable-ctrl-r
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
   };
 
 

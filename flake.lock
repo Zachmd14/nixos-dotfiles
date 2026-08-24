@@ -56,11 +56,28 @@
         "type": "github"
       }
     },
+    "potatofox": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1765301642,
+        "narHash": "sha256-WkUJytR6zPmq0vMCMlaEf3J8UM9XkY0IJa2Jn5OrO48=",
+        "ref": "refs/heads/main",
+        "rev": "80e926aeb20f61a927ec0be7a73835d5533227eb",
+        "revCount": 402,
+        "type": "git",
+        "url": "https://codeberg.org/awwpotato/PotatoFox"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/awwpotato/PotatoFox"
+      }
+    },
     "root": {
       "inputs": {
         "fetch": "fetch",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "potatofox": "potatofox"
       }
     }
   },
