@@ -1,10 +1,10 @@
-{ potatofox, ... }:
-let
-  profile = "default";
-in
+{ inputs, ... }:
+
 {
-  programs.firefox = {
-    profiles.${profile} = {
+  programs.librewolf = {
+    enable = true;
+    profiles.default = {
+      isDefault = true; # <-- Forces LibreWolf to use THIS profile
       settings = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
         "svg.context-properties.content.enabled" = true;
@@ -23,9 +23,10 @@ in
       };
     };
   };
-  
-  home.file.".mozilla/firefox/${profile}/chrome" = {
-    source = "${potatofox}/chrome";
+
+  # Home Manager places the 'default' profile exactly here:
+  home.file.".librewolf/default/chrome" = {
+    source = "${inputs.potatofox}/chrome";
     recursive = true;
   };
 }

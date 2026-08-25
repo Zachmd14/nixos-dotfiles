@@ -21,7 +21,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, fetch, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, fetch, potatofox, home-manager, ... }@inputs: {
 
     nixosConfigurations.zach-nixos = nixpkgs.lib.nixosSystem {
 
@@ -32,6 +32,8 @@
         home-manager.nixosModules.default
         {
           home-manager = {
+
+            extraSpecialArgs = { inherit inputs; };
             useGlobalPkgs = true;
             useUserPackages = true;
             users.zach = import ./home.nix;

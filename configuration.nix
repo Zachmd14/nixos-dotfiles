@@ -4,6 +4,7 @@
   imports =
     [
       ./hardware-configuration.nix
+      ./packages.nix
     ];
 
   boot.loader.systemd-boot.enable = true;
@@ -11,7 +12,14 @@
 
   networking.hostName = "zach-nixos";
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+  };
+
+  nix.extraOptions = {
+    warn-dirty = false;
+    keep-outputs = true;
+  };
 
   services.flatpak.enable = true;
   xdg.portal.enable = true;
@@ -55,55 +63,6 @@
 
 
   nixpkgs.config.allowUnfree = true;
-
-  environment.systemPackages = with pkgs; [
-    neovim
-    nixpkgs-fmt
-    alsa-utils
-    vesktop
-    opencode
-    flatpak
-    ccls
-    fish
-    zoxide
-    picom
-    atuin
-    bat
-    oh-my-fish
-    nodejs
-    fastfetch
-    pkgs.fetch
-    tree-sitter
-    nixd
-    zip
-    unzip
-    git
-    gnumake
-    gcc
-    wget
-    gtk3
-    librewolf
-    vial
-    htop
-    steam
-    playerctl
-    proton-vpn
-    dunst
-    emacs
-    xrdb
-    xsetroot
-    xss-lock
-    unclutter
-    picom
-    dbus
-    xrandr
-    gdb
-    zathura
-    texlive.combined.scheme-medium
-    cmake
-    libtool
-    ripgrep
-  ];
 
   fonts.packages = with pkgs; [
     fira-code
