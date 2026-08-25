@@ -16,10 +16,10 @@
     experimental-features = [ "nix-command" "flakes" ];
   };
 
-  nix.extraOptions = {
-    warn-dirty = false;
-    keep-outputs = true;
-  };
+  nix.extraOptions = ''
+    warn-dirty = false
+    keep-outputs = true
+  '';
 
   services.flatpak.enable = true;
   xdg.portal.enable = true;
