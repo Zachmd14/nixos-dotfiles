@@ -30,6 +30,7 @@
       modules = [
         ./configuration.nix
         home-manager.nixosModules.default
+	./cider-module.nix
         {
           home-manager = {
 
@@ -39,6 +40,9 @@
             users.zach = import ./home.nix;
             backupFileExtension = "bak";
           };
+
+	  modules.cider.enable = true;
+	  modules.cider.pkg = "cider-2";
         }
       ];
 

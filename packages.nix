@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     neovim
+    (pkgs.callPackage ./cider-2.nix {})
     nixpkgs-fmt
     alsa-utils
     vesktop
