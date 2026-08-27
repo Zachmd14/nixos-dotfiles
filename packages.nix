@@ -3,7 +3,8 @@
 {
   environment.systemPackages = with pkgs; [
     neovim
-    (pkgs.callPackage ./cider-2.nix {})
+    syncthing
+    cider-2
     nixpkgs-fmt
     alsa-utils
     vesktop
@@ -34,7 +35,6 @@
     mpv
     vial
     htop
-    steam
     playerctl
     proton-vpn
     dunst

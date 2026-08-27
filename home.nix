@@ -1,10 +1,10 @@
-{ config, pkgs, ... }:
+{ inputs, config, pkgs, ... }:
 
 
 {
-
   imports = [
     ./firefox.nix
+    inputs.pi-flake.homeManagerModules.default
   ];
 
   home.username = "zach";
@@ -21,9 +21,10 @@
     };
 
     shellAliases = {
-      nrs = "sudo nixos-rebuild switch --flake";
+      nrs = "sudo nixos-rebuild switch --flake /home/zach/nixos-flakes";
       mann = "MANPAGER='less -N --use-color -Dd+y -Du+208 -DN+r' man";
       cd = "z";
+      snr = "sudo nix run nixpkgs#";
     };
 
     functions = { };
@@ -45,6 +46,32 @@
     enableFishIntegration = true;
   };
 
+  services.syncthing.enable = true;
 
   programs.home-manager.enable = true;
+
+  programs.pi-coding-agent = {
+    enable = true;
+
+    package = inputs.pi-flake.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+    mutableDir = true;
+
+    models = {
+      providers = {
+        deepseek = {
+          baseUrl = "https://api.deepseek.com/v1"; # Use the DeepSeek base URL
+          api = "openai-completions";
+          apiKey = "sk-..."; # Your DeepSeek API key
+          models = [
+            { id = "deepseek-v4-pro"; }
+          ];
+        };
+      };
+    };
+
+    extensions = [
+      "npm:pi-subagents"
+    ];
+  };
 }

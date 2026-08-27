@@ -150,4 +150,7 @@
       "zach" = import ./home.nix;
     };
   };
+
+  programs.gamemode.enable = true;
+
 }

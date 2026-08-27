@@ -12,16 +12,20 @@
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
-
     };
 
     potatofox = {
       url = "git+https://codeberg.org/awwpotato/PotatoFox";
       flake = false;
     };
+
+    pi-flake = {
+      url = "github:ChauDucToan/pi-flake";
+    };
+
   };
 
-  outputs = { self, nixpkgs, fetch, potatofox, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, fetch, potatofox, home-manager, pi-flake, ... }@inputs: {
 
     nixosConfigurations.zach-nixos = nixpkgs.lib.nixosSystem {
 
@@ -30,19 +34,14 @@
       modules = [
         ./configuration.nix
         home-manager.nixosModules.default
-	./cider-module.nix
         {
           home-manager = {
-
             extraSpecialArgs = { inherit inputs; };
             useGlobalPkgs = true;
             useUserPackages = true;
             users.zach = import ./home.nix;
             backupFileExtension = "bak";
           };
-
-	  modules.cider.enable = true;
-	  modules.cider.pkg = "cider-2";
         }
       ];
 
