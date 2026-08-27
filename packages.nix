@@ -43,7 +43,6 @@
     xsetroot
     xss-lock
     unclutter
-    picom
     dbus
     xrandr
     gdb

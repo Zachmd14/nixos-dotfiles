@@ -50,25 +50,26 @@
 
   programs.home-manager.enable = true;
 
-  # programs.pi-coding-agent = {
-  #   enable = true;
+  programs.pi-coding-agent = {
+    enable = true;
 
-  #   package = inputs.pi-flake.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = inputs.pi-flake.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
-  #   mutableDir = true;
+    mutableDir = true;
 
-  #   models = {
-  #     providers = {
-  #       deepseek = {
-  #         baseUrl = "https://api.deepseek.com/v1"; # Use the DeepSeek base URL
-  #         api = "openai-completions";
-  #         apiKey = "sk-..."; # Your DeepSeek API key
-  #         models = [
-  #           { id = "deepseek-v4-pro"; }
-  #         ];
-  #       };
-  #     };
-  #   };
 
-  # };
+    models = {
+      providers = {
+        deepseek = {
+          baseUrl = "https://api.deepseek.com/v1"; # Use the DeepSeek base URL
+          api = "openai-completions";
+          apiKey = "sk-..."; # Your DeepSeek API key
+          models = [
+            { id = "deepseek-v4-pro"; }
+          ];
+        };
+      };
+    };
+
+  };
 }

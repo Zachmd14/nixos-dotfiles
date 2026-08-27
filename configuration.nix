@@ -144,13 +144,6 @@
     };
   };
 
-  home-manager = {
-    extraSpecialArgs = { inherit inputs; };
-    users = {
-      "zach" = import ./home.nix;
-    };
-  };
-
   programs.gamemode.enable = true;
 
 }
