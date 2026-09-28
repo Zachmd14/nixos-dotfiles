@@ -1,16 +1,21 @@
-{ inputs, config, pkgs, ... }:
+{ inputs
+, config
+, pkgs
+, username
+, ...
+}:
 
 {
   imports = [
-    ./apps/firefox.nix
+    ../apps/firefox.nix
   ];
   # Use a function instead of an alias
   home.sessionVariables = {
     DEMUCS_BIN = "${config.home.homeDirectory}/.venvs/demucs/bin/demucs";
   };
 
-  home.username = "zach";
-  home.homeDirectory = "/home/zach";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
 
   home.stateVersion = "26.05";
 
@@ -23,7 +28,7 @@
     };
 
     shellAliases = {
-      nrs = "sudo nixos-rebuild switch --flake /home/zach/nixos-flakes";
+      nrs = "sudo nixos-rebuild switch --flake $HOME/nixos-flakes";
       snr = "sudo nix run nixpkgs#";
 
       mann = "MANPAGER='less -N --use-color -Dd+y -Du+208 -DN+r' man";
@@ -92,5 +97,20 @@
       uris = [ "qemu:///system" ];
     };
   };
+
+  xdg.configFile."picom/picom.conf".text = ''
+    #################################
+    #
+    # Backend
+    #
+    #################################
+
+    # Backend to use: "xrender" or "glx".
+    # GLX backend is typically much faster but depends on a sane driver.
+
+    # backend = "xrender";
+    # backend = "xr_glx_hybrid";
+    backend = "xrender";
+  '';
 
 }

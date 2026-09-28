@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ pkgs, username, ... }:
 
 let
   factorio-fhs = pkgs.buildFHSEnv {
@@ -11,7 +11,7 @@ let
       libGL
       alsa-lib
     ];
-    runScript = "/home/zach/Games/Factorio_Linux/factorio/bin/x64/factorio";
+    runScript = "/home/${username}/Games/Factorio_Linux/factorio/bin/x64/factorio";
   };
 
   tex = pkgs.texlive.combine {

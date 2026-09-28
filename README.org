@@ -1,0 +1,144 @@
+#+title: Personal NixOS Flake
+#+description: Portable NixOS configuration for several machines.
+#+startup: showall
+
+* Overview
+
+This flake holds one NixOS system and one Home Manager user.
+Shared settings live in =modules/=.
+Machine settings live in =hosts/<hostname>/=.
+Each host supplies its own =hardware-configuration.nix=, its hostname, and its kernel tweaks.
+
+#+begin_example
+.
+├── flake.nix
+├── flake.lock
+├── README.org
+├── .gitignore
+├── apps/
+│   └── firefox.nix
+├── modules/
+│   ├── system.nix      # shared NixOS settings and the user account
+│   ├── packages.nix    # system packages
+│   └── home.nix        # Home Manager user settings
+└── hosts/
+    └── zach-nixos/
+        ├── default.nix                 # hostname and host-only settings
+        └── hardware-configuration.nix  # disks, CPU, kernel modules
+#+end_example
+
+=flake.nix= reads the login name from one variable, =username = "zach"=.
+To use a different login name, change that single line.
+
+* Install this config on a new PC
+
+** Requirements
+
+- A PC with NixOS installed. If the PC has no operating system, install NixOS first: https://nixos.org/manual/nixos/stable/#sec-installation
+- A network connection.
+- =git=. Install it for one command with =nix-shell -p git=.
+
+** Steps
+
+1. Log in as your normal user. Do not use =root=.
+2. Clone the repo into =$HOME/nixos-flakes=. The alias =nrs= and the README assume this path.
+   #+begin_src bash
+   git clone https://github.com/Zachmd14/nixos-dotfiles ~/nixos-flakes
+   cd ~/nixos-flakes
+   #+end_src
+   The repo is private. Git asks for your GitHub credentials.
+3. If your login name is not =zach=, edit the =username= variable in =flake.nix=.
+4. Make a host directory for this PC.
+   #+begin_src bash
+   HOST=$(hostname)
+   mkdir -p "hosts/$HOST"
+   #+end_src
+5. Generate the hardware configuration for this PC. This command reads the local disks.
+   #+begin_src bash
+   sudo nixos-generate-config --show-hardware-config > "hosts/$HOST/hardware-configuration.nix"
+   #+end_src
+6. Create =hosts/$HOST/default.nix=. Use this template. Set =networking.hostName= to =$HOST=.
+   #+begin_src nix
+   { config, lib, pkgs, ... }:
+
+   {
+     imports = [
+       ./hardware-configuration.nix
+     ];
+
+     networking.hostName = "<host>";
+
+     # Keep this line on an Intel CPU. Remove it on an AMD CPU.
+     hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+   }
+   #+end_src
+7. Register the host in =flake.nix=. Add one line to the =nixosConfigurations= set.
+   #+begin_src nix
+   nixosConfigurations."<host>" = mkHost "<host>";
+   #+end_src
+8. Build the system first. This step finds errors and does not touch the bootloader.
+   #+begin_src bash
+   nixos-rebuild build --flake ".#$HOST"
+   #+end_src
+9. Switch to the new system.
+   #+begin_src bash
+   sudo nixos-rebuild switch --flake ".#$HOST"
+   #+end_src
+10. Reboot, then log in to the =emacs= session from the display manager.
+
+** Manual steps after the first switch
+
+The flake does not carry these items. Do them once per PC.
+
+- Emacs config. The graphical session runs EXWM, so Emacs is the window manager. Copy =~/.config/emacs= to the new PC before the first graphical login. Without it the session shows a blank screen.
+- Flatpak apps. Run =flatpak install net.sonuscape.mouseless= for the mouseless app in the session script.
+- Factorio. Put the game under =~/Games/Factorio_Linux/factorio=. The =factorio= launcher points at that path.
+- Encrypted secrets. See the Secrets section below.
+- Group membership. The shared config puts the user in =wheel=, =networkmanager=, =libvirtd=, =docker=, =video=, and others. Add more in =modules/system.nix=.
+
+* Add another host to an existing clone
+
+1. Copy =hosts/zach-nixos/= to =hosts/<new-host>=.
+2. Replace =hardware-configuration.nix= with the file from the new PC. Generate it with =nixos-generate-config= on that PC.
+3. Edit =hosts/<new-host>/default.nix=. Set =networking.hostName=. Remove the Intel microcode line on an AMD CPU.
+4. Add one line to =nixosConfigurations= in =flake.nix=.
+5. Run =sudo nixos-rebuild switch --flake .#<new-host>=.
+
+* Host settings compared to shared settings
+
+=modules/system.nix= is shared by every host. It keeps some assumptions about the original laptop:
+
+- TLP battery thresholds. A desktop ignores them, but TLP still runs.
+- The backlight udev rule. It matches only backlight devices that exist.
+- The ACPI and audio rules. They match only devices that exist.
+
+Move a setting into =hosts/<host>/default.nix= when the setting is wrong for another PC.
+The Intel microcode line and the =i915= kernel parameters already sit there.
+
+* Secrets
+
+=modules/home.nix= holds a plain API key, and the key is in git history.
+
+- Rotate the key if the repo was ever public.
+- Keep the repo private.
+- For stronger protection, move the key to sops-nix or agenix. Then remove it from =modules/home.nix=.
+
+* Daily use
+
+- Rebuild and switch:
+  #+begin_src bash
+  nrs
+  #+end_src
+  The alias runs =sudo nixos-rebuild switch --flake $HOME/nixos-flakes=.
+- Test a change without making it permanent:
+  #+begin_src bash
+  sudo nixos-rebuild test --flake ~/nixos-flakes
+  #+end_src
+- Update every input to its latest revision:
+  #+begin_src bash
+  nix flake update
+  #+end_src
+- Check the flake for errors:
+  #+begin_src bash
+  nix flake check
+  #+end_src

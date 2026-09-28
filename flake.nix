@@ -1,21 +1,11 @@
 {
-  description = "Personnal Flake";
+  description = "Personal NixOS flake";
 
   inputs = {
-
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    fetch = {
-      url = "github:areofyl/fetch";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    durdraw = {
-      url = "github:Daaboulex/durdraw-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -23,41 +13,40 @@
       url = "git+https://codeberg.org/awwpotato/PotatoFox";
       flake = false;
     };
-
-
-
   };
 
   outputs =
-    { self
-    , nixpkgs
-    , fetch
-    , potatofox
-    , home-manager
-      # , pi
-    , ...
-    }@inputs: {
+    { self, nixpkgs, home-manager, ... }@inputs:
+    let
+      system = "x86_64-linux";
 
-      nixosConfigurations.zach-nixos = nixpkgs.lib.nixosSystem {
+      # Change this to your login name. The name must be a valid Unix user.
+      username = "zach";
 
-        system = "x86_64-linux";
+      mkHost =
+        hostname:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
 
-        modules = [
-          ./configuration.nix
-          home-manager.nixosModules.default
-          # pi.nixosModules.default
-          {
-            home-manager = {
-              extraSpecialArgs = { inherit inputs; };
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.zach = import ./home.nix;
-              backupFileExtension = "bak";
-            };
-          }
-        ];
+          specialArgs = { inherit inputs username; };
 
-        specialArgs = { inherit inputs; };
-      };
+          modules = [
+            ./modules/system.nix
+            ./hosts/${hostname}/default.nix
+            home-manager.nixosModules.default
+            {
+              home-manager = {
+                extraSpecialArgs = { inherit inputs username; };
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.${username} = import ./modules/home.nix;
+                backupFileExtension = "bak";
+              };
+            }
+          ];
+        };
+    in
+    {
+      nixosConfigurations.zach-nixos = mkHost "zach-nixos";
     };
 }

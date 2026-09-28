@@ -1,16 +1,19 @@
-{ config, pkgs, inputs, lib, ... }:
+{ config
+, pkgs
+, inputs
+, lib
+, username
+, ...
+}:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-      ./packages.nix
-    ];
+  imports = [
+    ./packages.nix
+  ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "zach-nixos";
   programs.nix-ld.enable = true;
 
   nix.settings = {
@@ -58,9 +61,9 @@
 
   hardware.uinput.enable = true;
 
-  users.users."zach" = {
+  users.users.${username} = {
     isNormalUser = true;
-    description = "zach";
+    description = username;
     extraGroups = [ "docker" "kvm" "vkc" "libvirt" "networkmanager" "audio" "wheel" "uinput" "video" ];
     shell = pkgs.fish;
     packages = with pkgs; [ ];
@@ -193,7 +196,7 @@
 
   programs.virt-manager.enable = true;
 
-  users.groups.libvirtd.members = [ "zach" ];
+  users.groups.libvirtd.members = [ username ];
 
   virtualisation.libvirtd.enable = true;
 
@@ -210,7 +213,7 @@
   };
   services.httpd = {
     enable = true;
-    adminAddr = "zach@zach-nixos";
+    adminAddr = "${username}@${config.networking.hostName}";
     enablePHP = true;
 
     virtualHosts.localhost = {
@@ -257,7 +260,7 @@
   };
 
   systemd.tmpfiles.rules = [
-    "z /home/zach 0711 zach users - -"
+    "z /home/${username} 0711 ${username} users - -"
     "d /srv/http 0755 root root - -"
     "d /srv/http/mysite 0755 root root - -"
 
@@ -305,6 +308,4 @@
   '';
 
   services.displayManager.ly.enable = true;
-
-  boot.kernelParams = [ "i915.enable_psr=0" "i915.enable_dc=0" ];
 }
