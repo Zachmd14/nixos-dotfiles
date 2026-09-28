@@ -86,7 +86,7 @@
               id = "deepseek-v4-pro";
             }
           ];
-          apiKey = "sk-58c32b21c8f348509a26d264e5b74055";
+          apiKey = "see secret";
         };
       };
     };
